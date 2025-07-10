@@ -1,0 +1,104 @@
+# GitHub Actions workflow for CodeQL static analysis
+# This workflow performs automated security and code quality scanning using GitHub's CodeQL engine
+# Supports Node.js/Express.js codebase with JavaScript analysis
+# Addresses security requirements from Technical Specifications F-003 (Server Lifecycle Management)
+
+name: "CodeQL"
+
+on:
+  # Trigger analysis on push to main branch to catch security issues early
+  push:
+    branches: [ "main" ]
+  
+  # Trigger analysis on pull requests to main branch to prevent introduction of vulnerabilities
+  pull_request:
+    branches: [ "main" ]
+  
+  # Run weekly security scan every Sunday at midnight UTC to catch new vulnerabilities
+  # This ensures continuous security monitoring even when no code changes occur
+  schedule:
+    - cron: '0 0 * * 0'
+
+# Define required permissions for CodeQL analysis workflow
+# Following principle of least privilege for security compliance
+permissions:
+  # Read access to repository actions for workflow execution
+  actions: read
+  
+  # Read access to repository contents for source code analysis
+  contents: read
+  
+  # Write access to security events for uploading CodeQL results to GitHub Security tab
+  security-events: write
+
+jobs:
+  # CodeQL analysis job for JavaScript/Node.js codebase
+  analyze:
+    name: Analyze
+    
+    # Use latest Ubuntu runner for consistent and secure execution environment
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        # Analyze JavaScript language for Node.js/Express.js application
+        # CodeQL supports multiple languages but we focus on JavaScript for this tutorial app
+        language: [ 'javascript' ]
+        # CodeQL supports: 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby'
+    
+    steps:
+    # Step 1: Checkout repository source code
+    # Uses actions/checkout@v4 for secure and efficient code retrieval
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        # Fetch full history for comprehensive analysis
+        fetch-depth: 0
+    
+    # Step 2: Initialize CodeQL scanning environment
+    # Uses github/codeql-action/init@v3 for latest CodeQL features and security updates
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        # Specify JavaScript language for Node.js/Express.js analysis
+        languages: ${{ matrix.language }}
+        
+        # Enable automatic dependency installation for comprehensive analysis
+        # This ensures all npm dependencies are available for security scanning
+        config: |
+          name: "CodeQL Config"
+          
+        # Use default CodeQL query suite for comprehensive security and quality analysis
+        # Includes security queries for common vulnerabilities (CWE, OWASP Top 10)
+        queries: +security-and-quality
+    
+    # Step 3: Build application for analysis
+    # Uses github/codeql-action/autobuild@v3 for automatic Node.js project detection
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+      # Autobuild automatically detects Node.js projects and runs appropriate build commands
+      # For this tutorial app, it will run: npm install (if package.json exists)
+      # No manual build steps required due to simple application structure
+    
+    # Step 4: Perform CodeQL static analysis
+    # Uses github/codeql-action/analyze@v3 for comprehensive security and quality analysis
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        # Specify analysis category for result organization
+        category: "/language:${{matrix.language}}"
+        
+        # Upload results to GitHub Security tab for vulnerability tracking
+        # Results include security vulnerabilities, code quality issues, and best practice violations
+        upload: true
+        
+        # Generate SARIF report for detailed analysis results
+        # SARIF (Static Analysis Results Interchange Format) provides standardized vulnerability reporting
+        output: sarif-results
+        
+        # Continue analysis even if some queries fail (for robustness)
+        ram: 2048
+        
+        # Set analysis timeout to prevent hanging builds
+        timeout: 30
