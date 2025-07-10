@@ -1,0 +1,47 @@
+# Dependencies
+# Exclude all installed npm dependencies from version control
+# These are restored via package.json and package-lock.json
+node_modules/
+
+# Environment Variables
+# Ignore environment variable files containing sensitive configuration
+# (e.g., API keys, secrets, DB credentials)
+.env
+.env.*
+
+# Logs
+# Exclude npm and yarn debug logs generated during failed installs or runtime errors
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Application logs
+# Ignore application log output directories and individual log files
+logs/
+*.log
+
+# Testing
+# Ignore code coverage output from test runs
+coverage/
+
+# Build artifacts
+# Ignore build output directories if the project is compiled or bundled
+dist/
+build/
+
+# Local configuration
+# Ignore local override files (e.g., config.local) that should not be shared
+*.local
+
+# Operating System Files
+# Ignore macOS Finder metadata files
+.DS_Store
+# Ignore Windows Explorer metadata files
+Thumbs.db
+
+# Editor Files
+# Ignore Vim swap files
+*.swp
+*.swo
+# Ignore temporary files
+*.tmp
