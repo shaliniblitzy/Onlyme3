@@ -1,0 +1,37 @@
+{
+  "watch": [
+    "server.js",
+    "config/",
+    "routes/",
+    "middleware/",
+    "utils/"
+  ],
+  "ext": "js,json",
+  "ignore": [
+    "test/",
+    "node_modules/",
+    "package-lock.json",
+    ".git",
+    "*.log",
+    "coverage/"
+  ],
+  "exec": "node server.js",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": "100",
+  "verbose": true,
+  "restartable": "rs",
+  "colours": true,
+  "runOnChangeOnly": false,
+  "legacyWatch": false,
+  "pollingInterval": 100,
+  "signal": "SIGTERM",
+  "stdout": true,
+  "stderr": true,
+  "events": {
+    "restart": "echo 'Server restarted due to file changes'",
+    "crash": "echo 'Server crashed - waiting for file changes before restart'",
+    "exit": "echo 'Server exited cleanly'"
+  }
+}

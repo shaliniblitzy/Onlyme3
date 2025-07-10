@@ -1,0 +1,681 @@
+# =============================================================================
+# Docker Compose Configuration for Node.js/Express.js Tutorial Backend
+# =============================================================================
+#
+# This docker-compose.yml file provides multi-container orchestration for the
+# Node.js/Express.js tutorial backend application, enabling reproducible local
+# development, testing, and educational deployment environments. The configuration
+# implements Docker Compose best practices while maintaining educational clarity
+# and production-ready patterns.
+#
+# Key Features:
+# - Docker Compose v3.8 specification compliance
+# - Single backend service orchestration with comprehensive configuration
+# - Environment variable management for flexible deployment scenarios
+# - Volume mounting support for development workflows with live code reloading
+# - Network isolation with bridge networking for security and performance
+# - Health check integration for service monitoring and reliability
+# - Restart policies for robust container lifecycle management
+# - Educational documentation throughout for learning and understanding
+#
+# Application Architecture:
+# - Node.js 22.x LTS runtime environment with Express.js 5.1.0 framework
+# - Single /hello endpoint serving "Hello world" static responses
+# - Comprehensive logging, error handling, and graceful shutdown capabilities
+# - Production-ready security hardening with non-root user execution
+# - Cross-platform compatibility for Windows, macOS, and Linux development
+#
+# Educational Value:
+# This configuration demonstrates professional Docker Compose orchestration
+# patterns suitable for both educational environments and production deployments,
+# showcasing container orchestration, networking, volume management, and
+# operational best practices for Node.js web applications.
+#
+# Usage Examples:
+#   Development: docker-compose up --build
+#   Production:  docker-compose -f docker-compose.yml up -d
+#   Cleanup:     docker-compose down --volumes
+#
+# @fileoverview Docker Compose orchestration for Node.js/Express.js backend
+# @author Backend Development Team  
+# @version 1.0.0
+# @since 2024
+# @requires Docker Engine 20.10.0 or higher
+# @requires Docker Compose 2.0.0 or higher
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Docker Compose Version Specification
+# -----------------------------------------------------------------------------
+#
+# Version 3.8 Selection Rationale:
+# - Supports all required Docker Compose features for the tutorial application
+# - Provides compatibility with Docker Engine 19.03.0+ and Docker Compose 1.25.0+
+# - Enables advanced networking, volume management, and health check capabilities
+# - Maintains backward compatibility while supporting modern Docker features
+# - Recommended version for educational and production environments
+#
+# Version 3.8 Features Utilized:
+# - Enhanced service configuration with build context and environment variables
+# - Advanced networking with custom driver configuration
+# - Volume mounting with bind mounts for development workflows
+# - Health check integration for service monitoring
+# - Restart policy configuration for container lifecycle management
+# - Educational comments and documentation support
+#
+# Educational Note:
+# The compose file version determines which Docker Compose features are available.
+# Version 3.8 provides the optimal balance of features and compatibility for
+# educational environments while supporting production deployment patterns.
+# -----------------------------------------------------------------------------
+
+version: '3.8'
+
+# -----------------------------------------------------------------------------
+# Services Configuration Section
+# -----------------------------------------------------------------------------
+#
+# The services section defines all containerized applications that comprise
+# the tutorial backend system. For this educational application, we define
+# a single backend service that orchestrates the Node.js/Express.js server
+# with comprehensive configuration for development and production use cases.
+#
+# Service Design Philosophy:
+# - Single responsibility principle with focused service definitions
+# - Comprehensive configuration supporting multiple deployment scenarios
+# - Educational clarity with detailed documentation and comments
+# - Production-ready patterns with security and reliability considerations
+# - Extensible architecture supporting future tutorial enhancements
+#
+# Educational Value:
+# This services configuration demonstrates how to properly orchestrate
+# web applications using Docker Compose, including build configuration,
+# environment management, networking, and operational best practices.
+# -----------------------------------------------------------------------------
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Backend Service Definition
+  # ---------------------------------------------------------------------------
+  #
+  # The backend service orchestrates the Node.js/Express.js tutorial application
+  # providing HTTP server functionality through the single /hello endpoint.
+  # This service configuration implements comprehensive orchestration including
+  # container building, environment configuration, port exposure, volume mounting,
+  # and health monitoring for robust educational and production deployment.
+  #
+  # Service Architecture:
+  # - Built from local Dockerfile with Node.js 22.x LTS and Express.js 5.1.0
+  # - Runs as non-root user for security hardening
+  # - Exposes port 3000 for HTTP communication
+  # - Configured with environment variables for flexible deployment
+  # - Supports volume mounting for development workflows
+  # - Includes health checks for service monitoring
+  # - Implements restart policies for reliability
+  #
+  # Educational Purpose:
+  # This service definition demonstrates professional Docker Compose service
+  # orchestration patterns, showcasing how to configure containerized web
+  # applications with proper security, networking, and operational practices.
+  # ---------------------------------------------------------------------------
+
+  backend:
+    
+    # -------------------------------------------------------------------------
+    # Container Build Configuration
+    # -------------------------------------------------------------------------
+    #
+    # The build section configures how Docker Compose builds the backend
+    # container image from the provided Dockerfile. This configuration
+    # specifies the build context, Dockerfile location, and any build-time
+    # arguments required for proper container construction.
+    #
+    # Build Context Strategy:
+    # - Uses current directory (.) as build context to include Dockerfile
+    # - Dockerfile location explicitly specified for clarity
+    # - Build context includes all necessary files for container image creation
+    # - Optimized for layer caching and efficient build processes
+    #
+    # Educational Value:
+    # This build configuration demonstrates how Docker Compose integrates
+    # with Dockerfile-based container builds, showing the relationship
+    # between build context, Dockerfile location, and container image creation.
+    # -------------------------------------------------------------------------
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Build arguments can be specified here if needed for future enhancements
+      # args:
+      #   NODE_VERSION: "22.0.0"
+      #   BUILD_ENV: "production"
+
+    # -------------------------------------------------------------------------
+    # Container Naming and Identification
+    # -------------------------------------------------------------------------
+    #
+    # The container_name provides a predictable, human-readable identifier
+    # for the running container instance. This name is used for container
+    # management, logging, monitoring, and debugging operations.
+    #
+    # Naming Convention:
+    # - Follows kebab-case naming convention for consistency
+    # - Includes project context (nodejs-hello-tutorial)
+    # - Specifies service role (backend) for clarity
+    # - Enables easy identification in Docker commands and monitoring tools
+    #
+    # Educational Note:
+    # Container naming is important for operational visibility and management.
+    # Consistent naming conventions make it easier to identify and manage
+    # containers in development and production environments.
+    # -------------------------------------------------------------------------
+
+    container_name: nodejs-hello-tutorial-backend
+
+    # -------------------------------------------------------------------------
+    # Network Port Configuration
+    # -------------------------------------------------------------------------
+    #
+    # The ports section maps container ports to host ports, enabling external
+    # access to the containerized application. This configuration exposes the
+    # Express.js server running on port 3000 inside the container to the same
+    # port on the host system for HTTP communication.
+    #
+    # Port Mapping Strategy:
+    # - Host port 3000 maps to container port 3000 for simplicity
+    # - Consistent port usage reduces configuration complexity
+    # - Standard HTTP port for Node.js development environments
+    # - Supports both development and production access patterns
+    #
+    # Port Mapping Format: "host_port:container_port"
+    # - External clients connect to localhost:3000
+    # - Requests are forwarded to the container's port 3000
+    # - The Express.js server listens on port 3000 inside the container
+    #
+    # Educational Value:
+    # Port mapping demonstrates how containerized applications communicate
+    # with external clients through Docker's networking layer, showing the
+    # relationship between host networking and container networking.
+    # -------------------------------------------------------------------------
+
+    ports:
+      - "3000:3000"
+
+    # -------------------------------------------------------------------------
+    # Environment Variable Configuration
+    # -------------------------------------------------------------------------
+    #
+    # The environment section configures runtime environment variables that
+    # control application behavior, performance, and operational characteristics.
+    # These variables are passed to the Node.js process inside the container
+    # and used by the Express.js application for configuration.
+    #
+    # Environment Variables:
+    # - NODE_ENV: Controls Express.js optimization and security features
+    # - PORT: Specifies the HTTP server port (matches container port)
+    # - Additional variables can be added for future enhancements
+    #
+    # NODE_ENV=production Benefits:
+    # - Enables Express.js production optimizations and security features
+    # - Disables development-specific debugging and verbose error messages
+    # - Improves application performance through framework optimizations
+    # - Configures secure defaults for production deployment
+    #
+    # Educational Note:
+    # Environment variables are a fundamental method for configuring
+    # containerized applications, providing flexibility without requiring
+    # code changes or image rebuilds for different deployment environments.
+    # -------------------------------------------------------------------------
+
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Additional environment variables can be added here:
+      # - LOG_LEVEL=info
+      # - HEALTH_CHECK_INTERVAL=30s
+      # - GRACEFUL_SHUTDOWN_TIMEOUT=10s
+
+    # -------------------------------------------------------------------------
+    # Volume Mounting Configuration
+    # -------------------------------------------------------------------------
+    #
+    # The volumes section configures persistent storage and file system
+    # integration between the host system and the container. For this tutorial
+    # application, volume mounting is commented out by default for production
+    # deployment but can be enabled for development workflows.
+    #
+    # Development Volume Mounting:
+    # When enabled, this configuration mounts the host source code directory
+    # into the container, allowing for live code reloading during development
+    # without requiring container rebuilds for every code change.
+    #
+    # Volume Mounting Benefits:
+    # - Enables hot-reloading during development (when using nodemon)
+    # - Reduces development iteration time by avoiding container rebuilds
+    # - Supports real-time code editing and testing workflows
+    # - Maintains separation between development and production configurations
+    #
+    # Educational Value:
+    # Volume mounting demonstrates how Docker containers can integrate with
+    # host file systems for development workflows while maintaining the
+    # isolation and reproducibility benefits of containerization.
+    #
+    # To enable development mode with volume mounting:
+    # 1. Uncomment the volumes section below
+    # 2. Use docker-compose up --build for initial setup
+    # 3. Code changes will be reflected immediately without rebuilds
+    # -------------------------------------------------------------------------
+
+    volumes:
+      # Development mode: Mount source code for live reloading
+      # Uncomment the following line for development workflows:
+      # - ../../src/backend:/usr/src/app
+      # 
+      # Production mode: Use copied code from container build (default)
+      # In production, code is baked into the container image for consistency
+      # and security, eliminating the need for host file system dependencies
+      
+      # Log volume for persistent logging (optional)
+      # - ./logs:/usr/src/app/logs
+      
+      # Configuration volume for external configuration (optional)
+      # - ./config:/usr/src/app/config:ro
+
+    # -------------------------------------------------------------------------
+    # Container Restart Policy Configuration
+    # -------------------------------------------------------------------------
+    #
+    # The restart policy determines how Docker handles container failures
+    # and system restarts. The "unless-stopped" policy provides robust
+    # container lifecycle management suitable for both development and
+    # production environments.
+    #
+    # Restart Policy Options:
+    # - no: Never restart the container automatically
+    # - always: Always restart the container if it stops
+    # - on-failure: Restart only if the container exits with an error
+    # - unless-stopped: Always restart unless explicitly stopped
+    #
+    # "unless-stopped" Policy Benefits:
+    # - Automatically restarts the container after system reboots
+    # - Continues running after Docker daemon restarts
+    # - Stops automatic restarts only when explicitly stopped by user
+    # - Provides reliability without interfering with intentional shutdowns
+    #
+    # Educational Value:
+    # Restart policies are crucial for production reliability, ensuring
+    # applications recover automatically from failures while respecting
+    # intentional administrative actions like maintenance shutdowns.
+    # -------------------------------------------------------------------------
+
+    restart: unless-stopped
+
+    # -------------------------------------------------------------------------
+    # Health Check Configuration
+    # -------------------------------------------------------------------------
+    #
+    # The healthcheck section configures container health monitoring to
+    # determine if the application is running correctly and able to serve
+    # requests. This configuration enables Docker and orchestration systems
+    # to monitor application health and take corrective actions if needed.
+    #
+    # Health Check Strategy:
+    # - Tests the /hello endpoint to verify HTTP server functionality
+    # - Uses curl command to perform HTTP GET request
+    # - Configures appropriate timeouts and retry intervals
+    # - Provides operational visibility into application health
+    #
+    # Health Check Parameters:
+    # - test: Command to execute for health verification
+    # - interval: Time between health checks (30 seconds)
+    # - timeout: Maximum time to wait for health check response (10 seconds)
+    # - retries: Number of consecutive failures before marking unhealthy (3)
+    # - start_period: Grace period during container startup (40 seconds)
+    #
+    # Educational Note:
+    # Health checks are essential for production reliability, enabling
+    # automated monitoring and recovery of containerized applications.
+    # They provide visibility into application health beyond basic container
+    # process monitoring.
+    # -------------------------------------------------------------------------
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/hello"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      # Alternative health check using wget if curl is not available:
+      # test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/hello"]
+      # 
+      # Alternative health check using Node.js http module:
+      # test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/hello', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => { process.exit(1) })"]
+
+    # -------------------------------------------------------------------------
+    # Network Configuration
+    # -------------------------------------------------------------------------
+    #
+    # The networks section specifies which Docker networks the container
+    # should join. By default, Docker Compose creates a default network
+    # for all services, but explicit network configuration can be specified
+    # for advanced networking requirements.
+    #
+    # Network Strategy:
+    # - Uses the default Docker Compose network for simplicity
+    # - Provides container-to-container communication capabilities
+    # - Enables network isolation from other Docker applications
+    # - Supports both development and production networking patterns
+    #
+    # Default Network Benefits:
+    # - Automatic network creation and management
+    # - Container name-based service discovery
+    # - Isolated network namespace for security
+    # - Easy integration with additional services
+    #
+    # Educational Value:
+    # Docker networking demonstrates how containers communicate with each
+    # other and external systems while maintaining isolation and security.
+    # Understanding networking is crucial for multi-container applications.
+    # -------------------------------------------------------------------------
+
+    networks:
+      - default
+
+    # -------------------------------------------------------------------------
+    # Resource Limits and Constraints (Optional)
+    # -------------------------------------------------------------------------
+    #
+    # The deploy section can specify resource limits and constraints to
+    # control container resource usage. These limits are commented out
+    # for the tutorial application but can be enabled for production
+    # environments with specific resource requirements.
+    #
+    # Resource Limit Benefits:
+    # - Prevents resource exhaustion on shared systems
+    # - Enables predictable performance characteristics
+    # - Supports capacity planning and resource management
+    # - Provides operational constraints for production deployment
+    #
+    # Educational Note:
+    # Resource limits are important for production environments where
+    # multiple applications share system resources. They prevent any
+    # single application from consuming excessive resources and impacting
+    # other applications or system stability.
+    # -------------------------------------------------------------------------
+
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1.0'
+    #       memory: 512M
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 256M
+    #   restart_policy:
+    #     condition: on-failure
+    #     delay: 5s
+    #     max_attempts: 3
+    #     window: 120s
+
+    # -------------------------------------------------------------------------
+    # Logging Configuration (Optional)
+    # -------------------------------------------------------------------------
+    #
+    # The logging section configures how Docker handles container log output.
+    # This configuration is commented out by default but can be enabled for
+    # production environments requiring specific logging strategies.
+    #
+    # Logging Driver Benefits:
+    # - Centralized log management and aggregation
+    # - Configurable log retention and rotation policies
+    # - Integration with external logging systems
+    # - Operational visibility and debugging capabilities
+    #
+    # Educational Value:
+    # Logging configuration demonstrates how containerized applications
+    # integrate with operational monitoring and observability systems,
+    # providing essential visibility into application behavior and performance.
+    # -------------------------------------------------------------------------
+
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "10m"
+    #     max-file: "3"
+    #     labels: "service=backend,application=nodejs-hello-tutorial"
+
+# -----------------------------------------------------------------------------
+# Network Configuration Section
+# -----------------------------------------------------------------------------
+#
+# The networks section defines custom Docker networks for container
+# communication and isolation. For the tutorial application, we use
+# the default bridge network which provides appropriate isolation
+# and communication capabilities for a single-service application.
+#
+# Network Architecture:
+# - Bridge network driver provides container-to-container communication
+# - Network isolation prevents interference with other Docker applications
+# - Supports both development and production networking patterns
+# - Enables future extension for multi-service architectures
+#
+# Bridge Network Benefits:
+# - Automatic container discovery and communication
+# - Network isolation for security and resource management
+# - Support for port mapping and external connectivity
+# - Easy integration with additional services and databases
+#
+# Educational Value:
+# Network configuration demonstrates how Docker provides network isolation
+# and communication capabilities for containerized applications, showing
+# the relationship between container networking and host system networking.
+# -----------------------------------------------------------------------------
+
+networks:
+  default:
+    driver: bridge
+    # Additional network configuration can be specified here:
+    # driver_opts:
+    #   com.docker.network.bridge.name: nodejs-tutorial-bridge
+    #   com.docker.network.bridge.enable_icc: "true"
+    #   com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+    # ipam:
+    #   driver: default
+    #   config:
+    #     - subnet: "172.20.0.0/16"
+    #       gateway: "172.20.0.1"
+
+# -----------------------------------------------------------------------------
+# Volume Configuration Section (Optional)
+# -----------------------------------------------------------------------------
+#
+# The volumes section defines named volumes for persistent data storage
+# across container restarts and updates. For the tutorial application,
+# named volumes are not required since the application is stateless,
+# but they can be added for logging, configuration, or future enhancements.
+#
+# Volume Strategy:
+# - Named volumes provide persistent storage independent of container lifecycle
+# - Bind mounts (used in development) provide host file system integration
+# - Volume configuration supports both development and production scenarios
+# - Extensible architecture for future storage requirements
+#
+# Educational Value:
+# Volume configuration demonstrates how Docker provides persistent storage
+# capabilities for containerized applications, showing the difference between
+# container file systems and persistent storage mechanisms.
+# -----------------------------------------------------------------------------
+
+# volumes:
+#   # Named volume for application logs
+#   app_logs:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./logs
+#   
+#   # Named volume for configuration files
+#   app_config:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./config
+
+# =============================================================================
+# Educational Usage Examples and Deployment Scenarios
+# =============================================================================
+#
+# This Docker Compose configuration supports multiple deployment scenarios
+# with different commands and configurations for various use cases:
+#
+# Development Workflow:
+#   1. Enable volume mounting for live code reloading:
+#      - Uncomment the volumes section in the backend service
+#      - Use docker-compose up --build for initial setup
+#      - Code changes will be reflected immediately
+#
+#   2. Development commands:
+#      docker-compose up --build          # Build and start with logs
+#      docker-compose up -d --build       # Build and start in background
+#      docker-compose logs -f backend     # Follow backend logs
+#      docker-compose restart backend     # Restart backend service
+#
+# Production Deployment:
+#   1. Production commands:
+#      docker-compose up -d               # Start in production mode
+#      docker-compose ps                  # Check service status
+#      docker-compose logs backend        # View backend logs
+#      docker-compose down                # Stop all services
+#
+# Testing and Validation:
+#   1. Health check validation:
+#      docker-compose ps                  # Check health status
+#      curl http://localhost:3000/hello   # Test endpoint directly
+#      docker-compose exec backend curl http://localhost:3000/hello
+#
+#   2. Container management:
+#      docker-compose exec backend bash   # Access container shell
+#      docker-compose top                 # View running processes
+#      docker-compose down --volumes      # Clean up with volumes
+#
+# Monitoring and Debugging:
+#   1. Log monitoring:
+#      docker-compose logs -f --tail=100 backend  # Follow recent logs
+#      docker-compose logs --since=1h backend     # Logs from last hour
+#
+#   2. Resource monitoring:
+#      docker-compose top backend         # Process information
+#      docker stats nodejs-hello-tutorial-backend  # Resource usage
+#
+# Configuration Management:
+#   1. Environment variable overrides:
+#      NODE_ENV=development docker-compose up  # Override environment
+#      docker-compose --env-file .env.dev up   # Use environment file
+#
+#   2. Service scaling (for future multi-instance scenarios):
+#      docker-compose up --scale backend=3     # Scale to 3 instances
+#      # Note: Requires port range configuration for multiple instances
+#
+# =============================================================================
+# Educational Benefits and Learning Outcomes
+# =============================================================================
+#
+# This Docker Compose configuration provides comprehensive learning opportunities
+# for understanding containerization, orchestration, and operational practices:
+#
+# 1. **Container Orchestration Concepts**:
+#    - Service definition and configuration
+#    - Container lifecycle management
+#    - Resource allocation and constraints
+#    - Health monitoring and reliability
+#
+# 2. **Networking and Communication**:
+#    - Container-to-host port mapping
+#    - Network isolation and bridge networking
+#    - Service discovery and inter-container communication
+#    - External connectivity and access patterns
+#
+# 3. **Storage and Persistence**:
+#    - Volume mounting for development workflows
+#    - Persistent storage strategies
+#    - Configuration management approaches
+#    - Data lifecycle and container independence
+#
+# 4. **Operational Excellence**:
+#    - Health check configuration and monitoring
+#    - Restart policies and failure recovery
+#    - Logging and observability integration
+#    - Resource management and constraints
+#
+# 5. **Development and Production Patterns**:
+#    - Development workflow optimization
+#    - Production deployment strategies
+#    - Configuration management between environments
+#    - Debugging and troubleshooting techniques
+#
+# 6. **Security and Best Practices**:
+#    - Container isolation and network security
+#    - Non-root user execution (via Dockerfile)
+#    - Environment variable management
+#    - Secure defaults and configuration
+#
+# This configuration serves as a comprehensive reference for professional
+# Docker Compose usage, suitable for educational environments while
+# maintaining production-grade quality and operational practices.
+# =============================================================================
+
+# =============================================================================
+# Troubleshooting Guide and Common Issues
+# =============================================================================
+#
+# Common issues and solutions for Docker Compose deployment:
+#
+# 1. **Port Already in Use**:
+#    Problem: Port 3000 is already in use on the host system
+#    Solution: Change the host port mapping to an available port
+#    Example: ports: ["8080:3000"]
+#
+# 2. **Container Build Failures**:
+#    Problem: Docker build fails due to missing dependencies or context
+#    Solution: Ensure Dockerfile and source code are in the correct locations
+#    Command: docker-compose build --no-cache backend
+#
+# 3. **Health Check Failures**:
+#    Problem: Health checks fail because curl is not available in container
+#    Solution: Use alternative health check commands or install curl
+#    Alternative: Use wget or Node.js-based health checks
+#
+# 4. **Volume Mount Issues**:
+#    Problem: Volume mounts don't work correctly on Windows or macOS
+#    Solution: Check Docker Desktop settings and file sharing permissions
+#    Windows: Use WSL2 backend for better volume performance
+#
+# 5. **Network Connectivity Issues**:
+#    Problem: Cannot access the application from host system
+#    Solution: Verify port mapping and firewall settings
+#    Test: curl http://localhost:3000/hello
+#
+# 6. **Environment Variable Problems**:
+#    Problem: Application doesn't respond to environment variable changes
+#    Solution: Restart containers after environment variable modifications
+#    Command: docker-compose down && docker-compose up -d
+#
+# 7. **Permission Issues**:
+#    Problem: Container cannot write to mounted volumes
+#    Solution: Check file permissions and user mapping
+#    Debug: docker-compose exec backend ls -la /usr/src/app
+#
+# 8. **Resource Constraints**:
+#    Problem: Container runs out of memory or CPU
+#    Solution: Increase Docker resource limits or add deploy constraints
+#    Monitor: docker stats nodejs-hello-tutorial-backend
+#
+# For additional troubleshooting, use:
+# - docker-compose logs backend        # View container logs
+# - docker-compose exec backend bash   # Access container shell
+# - docker-compose config              # Validate configuration
+# - docker-compose ps                  # Check service status
+# =============================================================================
